@@ -17,11 +17,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bignerdranch.android.geoimage.ImageAdapter
+import com.bignerdranch.android.geoimage.R
 import com.bignerdranch.android.geoimage.databinding.FragmentImageListBinding
 import com.bignerdranch.android.geoimage.viewmodel.ImageListViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -33,7 +33,7 @@ class ImageList: Fragment(), LocationListener {
     private lateinit var imageAdapter: ImageAdapter
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var imageListViewModel: ImageListViewModel
-    private var permissionDenied = true
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,13 +63,18 @@ class ImageList: Fragment(), LocationListener {
 
         imageListViewModel.location.observe(viewLifecycleOwner, { location ->
             if (isInternetAvailable(requireContext())){
-                binding.textError.text = "Loading"
+                binding.textError.text = getString(R.string.loading)
                 Log.d("test", "hmm  ${location.latitude} ${location.longitude} ")
                 imageListViewModel.loadPhotos(location)
             } else {
-                binding.textError.text = "No Internet Connection"
+                binding.textError.text = getString(R.string.no_nternet_error)
             }
         })
+
+        binding.swipeRefresh.setOnRefreshListener {
+            imageListViewModel.location.value?.let { imageListViewModel.loadPhotos(it) }
+            binding.swipeRefresh.isRefreshing = false
+        }
 
         enableMyLocation()
         setupUI()
@@ -99,8 +104,6 @@ class ImageList: Fragment(), LocationListener {
         } else {
             // Permission was denied. Display an error message
             // Display the missing permission error dialog when the fragments resume.
-
-            permissionDenied = true
         }
     }
 
@@ -120,7 +123,6 @@ class ImageList: Fragment(), LocationListener {
                 LOCATION_PERMISSION_REQUEST_CODE
             )
         } else {
-            permissionDenied = false
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null)
                     imageListViewModel.updateLocation(location)
