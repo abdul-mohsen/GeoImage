@@ -12,5 +12,9 @@ interface FlickrAPI {
     fun fetchUrlImages(@Url url:String): Call<ResponseBody>
 
     @GET("services/rest?method=flickr.photos.search")
-    suspend fun searchImages(@Query("text") query: String = "cat"): FlickrResponse
+    suspend fun searchImages(
+        @Query("lat") lat: String = "0.0",
+        @Query("lon") lon: String = "0.0",
+        @Query("radius") radius: String = "5",
+    ): FlickrResponse
 }
