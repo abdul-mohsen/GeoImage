@@ -1,5 +1,6 @@
 package com.bignerdranch.android.geoimage.viewmodel
 
+import android.location.Location
 import android.util.Log
 import androidx.lifecycle.*
 import com.bignerdranch.android.geoimage.flickrAPI.ImageRepository
@@ -8,22 +9,35 @@ import kotlinx.coroutines.launch
 
 class ImageListViewModel: ViewModel() {
     private val repository:ImageRepository = ImageRepository()
-
     private val mutableImageListLiveData =  MutableLiveData<List<Image>>()
+    val ImageListLiveData: LiveData<List<Image>>
+        get() =  mutableImageListLiveData
+    private var _location: MutableLiveData<Location> = MutableLiveData<Location>()
+    val location: LiveData<Location>
+        get() = _location
 
-    fun loadPhotos(): LiveData<List<Image>> {
+
+
+    fun loadPhotos(location: Location) {
         viewModelScope.launch {
-            val searchResponse = repository.client.searchImages()
-            Log.d("test", searchResponse.photos.toString())
+            val searchResponse = repository.client.searchImages(
+                lat = location.latitude.toString(),
+                lon = location.longitude.toString()
+            )
             val photosList = searchResponse.photos.photo.map { image ->
                 Image(
                     id = image.id,
                     url = "https://live.staticflickr.com/${image.server}/${image.id}_${image.secret}.jpg",
-                    title = image.title
+                    title = image.title,
+                    views = image.views,
+                    description = image.description
                 )
             }
-            mutableImageListLiveData.postValue(photosList)
+            mutableImageListLiveData.postValue(photosList.sortedByDescending { it.views })
         }
-        return mutableImageListLiveData
+    }
+
+    fun updateLocation(cLocation: Location){
+        _location.postValue(cLocation)
     }
 }

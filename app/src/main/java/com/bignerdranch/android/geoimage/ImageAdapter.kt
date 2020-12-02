@@ -28,10 +28,10 @@ class ImageAdapter: ListAdapter<Image,ImageAdapter.ImageViewHolder>(ImageDiffCal
     inner class ImageViewHolder(private val bindingHolder: ImageItemBinding): RecyclerView.ViewHolder(bindingHolder.root){
         fun bind(image: Image, position: Int){
             Log.d("test binding", "___  ${image.id}")
-            bindingHolder.positionText.text = position.toString()
+            bindingHolder.positionText.text = image.views.toString()
             Picasso.get().load(image.url)
                 .networkPolicy(NetworkPolicy.OFFLINE)
-                .resize(400, 400)
+                .fit()
                 .centerCrop()
                 .placeholder(R.drawable.ic_loading)
                 .into(bindingHolder.imageViewHolder, object : Callback {
