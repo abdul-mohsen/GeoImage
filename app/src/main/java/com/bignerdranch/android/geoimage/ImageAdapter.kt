@@ -31,9 +31,9 @@ class ImageAdapter: ListAdapter<Image,ImageAdapter.ImageViewHolder>(ImageDiffCal
             bindingHolder.positionText.text = image.views.toString()
             Picasso.get().load(image.url)
                 .networkPolicy(NetworkPolicy.OFFLINE)
+                .placeholder(R.drawable.ic_loading)
                 .fit()
                 .centerCrop()
-                .placeholder(R.drawable.ic_loading)
                 .into(bindingHolder.imageViewHolder, object : Callback {
                     override fun onSuccess() {
                         Log.d("test","success")
@@ -42,7 +42,7 @@ class ImageAdapter: ListAdapter<Image,ImageAdapter.ImageViewHolder>(ImageDiffCal
                     override fun onError(e: Exception?) {
                         Log.d("test","error")
                         Picasso.get().load(image.url)
-                            .resize(400, 400)
+                            .fit()
                             .centerCrop()
                             .into(bindingHolder.imageViewHolder)
                     }
