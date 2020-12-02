@@ -7,5 +7,7 @@ data class Image(
     var id: String = "",
     @SerializedName("url_s") var url: String = "",
     var secret: String = "",
-    var server: String = ""
+    var server: String = "",
+    var views: Int = 0,
+    var description: String = ""
 )
