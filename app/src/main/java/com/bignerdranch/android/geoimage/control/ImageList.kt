@@ -9,6 +9,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -58,10 +59,12 @@ class ImageList: Fragment(), LocationListener {
         }
         imageListViewModel.ImageListLiveData.observe(viewLifecycleOwner, { list ->
             Log.d("test", "should be once ${list.size}  ${imageListViewModel.location}")
+            binding.textError.visibility = View.GONE
             imageAdapter.submitList(list)
         })
 
         imageListViewModel.location.observe(viewLifecycleOwner, { location ->
+            binding.textError.visibility = View.VISIBLE
             if (isInternetAvailable(requireContext())){
                 binding.textError.text = getString(R.string.loading)
                 Log.d("test", "hmm  ${location.latitude} ${location.longitude} ")
@@ -72,7 +75,9 @@ class ImageList: Fragment(), LocationListener {
         })
 
         binding.swipeRefresh.setOnRefreshListener {
-            imageListViewModel.location.value?.let { imageListViewModel.loadPhotos(it) }
+            imageListViewModel.location.value?.let {
+                imageListViewModel.updateLocation(cLocation = it)
+            }
             binding.swipeRefresh.isRefreshing = false
         }
 
