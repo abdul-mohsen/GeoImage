@@ -36,7 +36,7 @@ class ImageAdapter: ListAdapter<Image,ImageAdapter.ImageViewHolder>(ImageDiffCal
                 .centerCrop()
                 .into(bindingHolder.imageViewHolder, object : Callback {
                     override fun onSuccess() {
-                        Log.d("test","success")
+                        Log.d("test","Loaded locally success")
                     }
 
                     override fun onError(e: Exception?) {

@@ -1,48 +1,42 @@
 package com.bignerdranch.android.geoimage.control
 
-import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import com.bignerdranch.android.geoimage.GeoLocation
 import com.bignerdranch.android.geoimage.ImageAdapter
 import com.bignerdranch.android.geoimage.R
 import com.bignerdranch.android.geoimage.databinding.FragmentImageListBinding
 import com.bignerdranch.android.geoimage.viewmodel.ImageListViewModel
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 
 
-class ImageList: Fragment(), LocationListener {
+
+class ImageList: Fragment() {
     private lateinit var binding: FragmentImageListBinding
     private lateinit var imageAdapter: ImageAdapter
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var imageListViewModel: ImageListViewModel
+    private lateinit var geoLocation: GeoLocation
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(
-            requireContext()
-        )
+
         imageListViewModel = ViewModelProvider(this).get(ImageListViewModel::class.java)
-        requestUpdateLocation()
+        geoLocation = GeoLocation(LOCATION_PERMISSION_REQUEST_CODE) { location:Location ->
+                imageListViewModel.updateLocation(location)
+        }
+        geoLocation.initFuesdLocationProviderClient(requireContext())
     }
 
     override fun onCreateView(
@@ -57,12 +51,8 @@ class ImageList: Fragment(), LocationListener {
             this.adapter = imageAdapter
             layoutManager = GridLayoutManager(requireContext(), 3)
         }
-        imageListViewModel.ImageListLiveData.observe(viewLifecycleOwner, { list ->
-            Log.d("test", "should be once ${list.size}  ${imageListViewModel.location}")
-            binding.textError.visibility = View.GONE
-            imageAdapter.submitList(list)
-        })
 
+        // observe the location change
         imageListViewModel.location.observe(viewLifecycleOwner, { location ->
             binding.textError.visibility = View.VISIBLE
             if (isInternetAvailable(requireContext())){
@@ -71,94 +61,49 @@ class ImageList: Fragment(), LocationListener {
                 imageListViewModel.loadPhotos(location)
             } else {
                 binding.textError.text = getString(R.string.no_nternet_error)
+                Log.d("test", "hmm  no internet connection error ")
             }
         })
 
+        // observe the imageList
+        imageListViewModel.imageListLiveData.observe(viewLifecycleOwner, { list ->
+            Log.d("test", "should be once ${list.size}  ${imageListViewModel.location}")
+            binding.textError.visibility = View.GONE
+            imageAdapter.submitList(list)
+        })
+
+        // refresh
         binding.swipeRefresh.setOnRefreshListener {
-            imageListViewModel.location.value?.let {
-                imageListViewModel.updateLocation(cLocation = it)
+            if (geoLocation.GPSConnnected){
+                imageListViewModel.location.value?.let {
+                    imageListViewModel.updateLocation(cLocation = it)
+                }
+            } else {
+                binding.textError.text = getString(R.string.no_gps_error)
+                binding.textError.visibility = View.VISIBLE
             }
+            geoLocation.enableMyLocation(requireActivity())
             binding.swipeRefresh.isRefreshing = false
         }
 
-        enableMyLocation()
-        setupUI()
-
         return binding.root
-
     }
-
-    // Create persistent LocationManager reference
-
-    private fun setupUI() {
-
-    }
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
-            return
-        }
-        if (grantResults.isNotEmpty() and (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-            // Enable the my location layer if the permission has been granted.
-            enableMyLocation()
-        } else {
-            // Permission was denied. Display an error message
-            // Display the missing permission error dialog when the fragments resume.
-        }
-    }
-
-    private fun enableMyLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Permission to access the location is missing. Show rationale and request permission
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
-        } else {
-            fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null)
-                    imageListViewModel.updateLocation(location)
+        grantResults: IntArray) {
+            if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+                return
             }
-        }
-    }
-
-    override fun onLocationChanged(location: Location) {
-        Log.d("test", "changed")
-        imageListViewModel.updateLocation(location)
-    }
-
-    private fun requestUpdateLocation(){
-        val locationManager =  requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager?
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
-        locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 1.0f, this)
-        val isGPS = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        if (isGPS !=null && !isGPS){
-            val gpsOptionsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-            startActivity(gpsOptionsIntent)
-        }
-
+            if (grantResults.isNotEmpty() and (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                // Enable the my location layer if the permission has been granted.
+                geoLocation.enableMyLocation(requireActivity())
+            }
+//            else {
+//                // Permission was denied. Display an error message
+//                // Display the missing permission error dialog when the fragments resume.
+//            }
     }
 
     private fun isInternetAvailable(context: Context): Boolean {
@@ -190,9 +135,15 @@ class ImageList: Fragment(), LocationListener {
         return result
     }
 
-    override fun onProviderEnabled(provider: String) { requestUpdateLocation() }
-    override fun onProviderDisabled(provider: String) { }
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+    override fun onResume() {
+        super.onResume()
+        geoLocation.enableMyLocation(requireActivity())
+        if (!geoLocation.GPSConnnected){
+            binding.textError.text = getString(R.string.no_gps_error)
+            binding.textError.visibility = View.VISIBLE
+        }
+
+    }
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
