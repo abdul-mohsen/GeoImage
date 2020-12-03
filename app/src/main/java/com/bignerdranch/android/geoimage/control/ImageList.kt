@@ -7,7 +7,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,8 +17,9 @@ import com.bignerdranch.android.geoimage.GeoLocation
 import com.bignerdranch.android.geoimage.ImageAdapter
 import com.bignerdranch.android.geoimage.R
 import com.bignerdranch.android.geoimage.databinding.FragmentImageListBinding
+import com.bignerdranch.android.geoimage.model.DeviceState
 import com.bignerdranch.android.geoimage.viewmodel.ImageListViewModel
-
+import timber.log.Timber
 
 
 class ImageList: Fragment() {
@@ -55,34 +55,51 @@ class ImageList: Fragment() {
         // observe the location change
         imageListViewModel.location.observe(viewLifecycleOwner, { location ->
             binding.textError.visibility = View.VISIBLE
-            if (isInternetAvailable(requireContext())){
+            if (imageListViewModel.deviceStateLiveData.value == DeviceState.Good){
                 binding.textError.text = getString(R.string.loading)
-                Log.d("test", "hmm  ${location.latitude} ${location.longitude} ")
+                Timber.d("hmm  ${location.latitude} ${location.longitude} ")
                 imageListViewModel.loadPhotos(location)
-            } else {
-                binding.textError.text = getString(R.string.no_nternet_error)
-                Log.d("test", "hmm  no internet connection error ")
             }
         })
 
         // observe the imageList
         imageListViewModel.imageListLiveData.observe(viewLifecycleOwner, { list ->
-            Log.d("test", "should be once ${list.size}  ${imageListViewModel.location}")
+            Timber.d( "should be once ${list.size}")
             binding.textError.visibility = View.GONE
             imageAdapter.submitList(list)
         })
 
+        // observe device state
+        imageListViewModel.deviceStateLiveData.observe(viewLifecycleOwner, { deviceState ->
+            when(deviceState){
+                DeviceState.NoGPS -> {
+                    binding.textError.text = getString(R.string.no_gps_error)
+                    binding.textError.visibility = View.VISIBLE
+                    Timber.d( "No GPS signal")
+                }
+                DeviceState.NoInternet ->{
+                    if (isInternetAvailable(requireContext()))
+                        imageListViewModel.updateDeviceState(DeviceState.Good)
+                    else{
+                        binding.textError.text = getString(R.string.no_nternet_error)
+                        binding.textError.visibility = View.VISIBLE
+                        Timber.d( "No Internet")
+                    }
+                }
+                DeviceState.Good ->{
+                    imageListViewModel.updateLocation(imageListViewModel.location.value!!)
+                    Timber.d( "All good")
+                }
+                else -> Timber.d("The state is null")
+            }
+        })
+
         // refresh
         binding.swipeRefresh.setOnRefreshListener {
-            if (geoLocation.GPSConnnected){
-                imageListViewModel.location.value?.let {
-                    imageListViewModel.updateLocation(cLocation = it)
-                }
-            } else {
-                binding.textError.text = getString(R.string.no_gps_error)
-                binding.textError.visibility = View.VISIBLE
+            geoLocation.enableMyLocation(requireActivity()){ deviceState ->
+                imageListViewModel.updateDeviceState(deviceState)
             }
-            geoLocation.enableMyLocation(requireActivity())
+
             binding.swipeRefresh.isRefreshing = false
         }
 
@@ -93,17 +110,17 @@ class ImageList: Fragment() {
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray) {
-            if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
-                return
+        when(requestCode){
+            LOCATION_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() and (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // Enable the my location layer if the permission has been granted.
+                    geoLocation.enableMyLocation(requireActivity()){ deviceState ->
+                        imageListViewModel.updateDeviceState(deviceState)
+                    }
+                }
             }
-            if (grantResults.isNotEmpty() and (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                // Enable the my location layer if the permission has been granted.
-                geoLocation.enableMyLocation(requireActivity())
-            }
-//            else {
-//                // Permission was denied. Display an error message
-//                // Display the missing permission error dialog when the fragments resume.
-//            }
+            else -> return
+        }
     }
 
     private fun isInternetAvailable(context: Context): Boolean {
@@ -137,7 +154,9 @@ class ImageList: Fragment() {
 
     override fun onResume() {
         super.onResume()
-        geoLocation.enableMyLocation(requireActivity())
+        geoLocation.enableMyLocation(requireActivity()){ deviceState ->
+            imageListViewModel.updateDeviceState(deviceState)
+        }
         if (!geoLocation.GPSConnnected){
             binding.textError.text = getString(R.string.no_gps_error)
             binding.textError.visibility = View.VISIBLE

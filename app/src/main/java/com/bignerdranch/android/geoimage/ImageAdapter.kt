@@ -1,6 +1,5 @@
 package com.bignerdranch.android.geoimage
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
@@ -10,6 +9,7 @@ import com.bignerdranch.android.geoimage.model.Image
 import com.squareup.picasso.Callback
 import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
+import timber.log.Timber
 import java.lang.Exception
 
 class ImageAdapter: ListAdapter<Image,ImageAdapter.ImageViewHolder>(ImageDiffCallback()) {
@@ -21,13 +21,13 @@ class ImageAdapter: ListAdapter<Image,ImageAdapter.ImageViewHolder>(ImageDiffCal
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        Log.d("test number", "$position ${holder.position} ${getItem(position).url}  ")
+        Timber.d( "$position  ${getItem(position).url}  ")
         holder.bind(getItem(position), position)
     }
 
     inner class ImageViewHolder(private val bindingHolder: ImageItemBinding): RecyclerView.ViewHolder(bindingHolder.root){
         fun bind(image: Image, position: Int){
-            Log.d("test binding", "___  ${image.id}")
+            Timber.d( "___  ${image.id}")
             bindingHolder.positionText.text = image.views.toString()
             Picasso.get().load(image.url)
                 .networkPolicy(NetworkPolicy.OFFLINE)
@@ -36,11 +36,11 @@ class ImageAdapter: ListAdapter<Image,ImageAdapter.ImageViewHolder>(ImageDiffCal
                 .centerCrop()
                 .into(bindingHolder.imageViewHolder, object : Callback {
                     override fun onSuccess() {
-                        Log.d("test","Loaded locally success")
+                        Timber.d("Loaded locally success")
                     }
 
                     override fun onError(e: Exception?) {
-                        Log.d("test","error")
+                        Timber.d("error")
                         Picasso.get().load(image.url)
                             .fit()
                             .centerCrop()

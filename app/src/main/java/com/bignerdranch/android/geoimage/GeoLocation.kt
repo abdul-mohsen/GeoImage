@@ -10,17 +10,17 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.startActivity
+import com.bignerdranch.android.geoimage.model.DeviceState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import timber.log.Timber
 
 
-private const val GEO_LOCATION = "GeoLocation"
 class GeoLocation(
     private val LOCATION_PERMISSION_REQUEST_CODE: Int = 1,
-    private val function: (Location) -> Unit
+    private val updateLocation: (Location) -> Unit,
 ) : LocationListener {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     var GPSConnnected = false
@@ -29,8 +29,8 @@ class GeoLocation(
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
     }
     override fun onLocationChanged(location: Location) {
-        Log.d("New class test", "changed")
-        function(location)
+        Timber.d("Location changed")
+        updateLocation(location)
     }
 
     private fun requestUpdateLocation(context: Context){
@@ -61,7 +61,7 @@ class GeoLocation(
         }
     }
 
-    fun enableMyLocation(activity: Activity) {
+    fun enableMyLocation(activity: Activity, updateDeviceState: (DeviceState) -> Unit) {
         if (ActivityCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -78,20 +78,22 @@ class GeoLocation(
             )
         } else {
             fusedLocationProviderClient.lastLocation.addOnSuccessListener{ location ->
-                Log.d(GEO_LOCATION, "changed")
+                Timber.d( "Location got updated")
                 if (location != null) {
-                    function(location)
-                    GPSConnnected = true}
+                    updateLocation(location)
+                    GPSConnnected = true
+                    updateDeviceState(DeviceState.NoInternet)}
                 else {
                     GPSConnnected = false
+                    updateDeviceState(DeviceState.NoGPS)
                     requestUpdateLocation(activity)
-                    Log.d(GEO_LOCATION, "but it is null")
+                    Timber.d( "but it is null")
                 }
             }
         }
     }
 
     override fun onProviderEnabled(provider: String) { }
-    override fun onProviderDisabled(provider: String) { }
+    override fun onProviderDisabled(provider: String) {  }
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
 }
