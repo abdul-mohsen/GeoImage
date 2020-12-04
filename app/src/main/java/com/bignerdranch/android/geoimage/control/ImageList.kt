@@ -14,11 +14,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bignerdranch.android.geoimage.GeoLocation
-import com.bignerdranch.android.geoimage.ImageAdapter
+import com.bignerdranch.android.geoimage.adapter.ImageAdapter
 import com.bignerdranch.android.geoimage.R
 import com.bignerdranch.android.geoimage.databinding.FragmentImageListBinding
 import com.bignerdranch.android.geoimage.model.DeviceState
 import com.bignerdranch.android.geoimage.viewmodel.ImageListViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import timber.log.Timber
 
 
@@ -27,6 +29,7 @@ class ImageList: Fragment() {
     private lateinit var imageAdapter: ImageAdapter
     private lateinit var imageListViewModel: ImageListViewModel
     private lateinit var geoLocation: GeoLocation
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +39,7 @@ class ImageList: Fragment() {
         geoLocation = GeoLocation(LOCATION_PERMISSION_REQUEST_CODE) { location:Location ->
                 imageListViewModel.updateLocation(location)
         }
-        geoLocation.initFuesdLocationProviderClient(requireContext())
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
     override fun onCreateView(
@@ -58,6 +61,7 @@ class ImageList: Fragment() {
             if (imageListViewModel.deviceStateLiveData.value == DeviceState.Good){
                 binding.textError.text = getString(R.string.loading)
                 Timber.d("hmm  ${location.latitude} ${location.longitude} ")
+//                imageListViewModel.loadPhotos(location)
                 imageListViewModel.loadPhotos(location)
             }
         })
@@ -68,6 +72,7 @@ class ImageList: Fragment() {
             binding.textError.visibility = View.GONE
             imageAdapter.submitList(list)
         })
+
 
         // observe device state
         imageListViewModel.deviceStateLiveData.observe(viewLifecycleOwner, { deviceState ->
@@ -96,7 +101,9 @@ class ImageList: Fragment() {
 
         // refresh
         binding.swipeRefresh.setOnRefreshListener {
-            geoLocation.enableMyLocation(requireActivity()){ deviceState ->
+//            imageListViewModel.invalidateDateSource()
+            geoLocation.enableMyLocation(requireActivity(), fusedLocationProviderClient)
+            { deviceState ->
                 imageListViewModel.updateDeviceState(deviceState)
             }
 
@@ -114,7 +121,8 @@ class ImageList: Fragment() {
             LOCATION_PERMISSION_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() and (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // Enable the my location layer if the permission has been granted.
-                    geoLocation.enableMyLocation(requireActivity()){ deviceState ->
+                    geoLocation.enableMyLocation(requireActivity(), fusedLocationProviderClient)
+                    { deviceState ->
                         imageListViewModel.updateDeviceState(deviceState)
                     }
                 }
@@ -154,14 +162,10 @@ class ImageList: Fragment() {
 
     override fun onResume() {
         super.onResume()
-        geoLocation.enableMyLocation(requireActivity()){ deviceState ->
+        geoLocation.enableMyLocation(requireActivity(), fusedLocationProviderClient)
+        { deviceState ->
             imageListViewModel.updateDeviceState(deviceState)
         }
-        if (!geoLocation.GPSConnnected){
-            binding.textError.text = getString(R.string.no_gps_error)
-            binding.textError.visibility = View.VISIBLE
-        }
-
     }
 
     companion object {

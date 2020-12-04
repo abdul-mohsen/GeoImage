@@ -3,6 +3,7 @@ package com.bignerdranch.android.geoimage.flickrAPI
 import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.Response
+import timber.log.Timber
 
 
 private const val API_KEY = "d14c694f6d02863f43e76e736616537e"
@@ -21,7 +22,7 @@ class FlickrInterceptor: Interceptor {
                     .build()
             ).build()
         )
-        Log.d("test", x.request.url.toString())
+        Timber.d(x.request.url.toString())
         return x
     }
 

@@ -26,12 +26,14 @@ class ImageListViewModel: ViewModel() {
     val deviceStateLiveData
         get() = _deviceStateLiveData
 
+
+
     fun loadPhotos(location: Location) {
         viewModelScope.launch {
             try {
                 val searchResponse = repository.client.searchImages(
-                    lat = location.latitude.toString(),
-                    lon = location.longitude.toString()
+                    lat = location.latitude,
+                    lon = location.longitude
                 )
                 val photosList = searchResponse.photos.photo.map { image ->
                     Image(
@@ -46,8 +48,6 @@ class ImageListViewModel: ViewModel() {
             } catch (e: Exception){
                 Timber.d("boom error")
             }
-
-
         }
     }
 
@@ -58,4 +58,22 @@ class ImageListViewModel: ViewModel() {
     fun updateDeviceState(deviceState: DeviceState){
         _deviceStateLiveData.postValue(deviceState)
     }
+
+//    private lateinit var imagePagingSource: ImagePagingSource
+//    lateinit var flow: Flow<PagingData<Image>>
+//
+//    fun loadPhotos2(location: Location){
+//        imagePagingSource = ImagePagingSource(
+//            repository,
+//            lat = location.latitude,
+//            lon = location.longitude)
+//
+//        flow = Pager(PagingConfig(pageSize = 50)){
+//            imagePagingSource
+//        }.flow.cachedIn(viewModelScope)
+//    }
+//
+//    fun invalidateDateSource() =
+//        imagePagingSource.invalidate()
+
 }

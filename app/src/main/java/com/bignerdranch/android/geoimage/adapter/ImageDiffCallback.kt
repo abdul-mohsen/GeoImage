@@ -1,4 +1,4 @@
-package com.bignerdranch.android.geoimage
+package com.bignerdranch.android.geoimage.adapter
 
 import androidx.recyclerview.widget.DiffUtil
 import com.bignerdranch.android.geoimage.model.Image

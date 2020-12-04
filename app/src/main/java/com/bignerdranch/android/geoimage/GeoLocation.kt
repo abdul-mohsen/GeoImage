@@ -14,7 +14,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.startActivity
 import com.bignerdranch.android.geoimage.model.DeviceState
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import timber.log.Timber
 
 
@@ -22,12 +21,7 @@ class GeoLocation(
     private val LOCATION_PERMISSION_REQUEST_CODE: Int = 1,
     private val updateLocation: (Location) -> Unit,
 ) : LocationListener {
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    var GPSConnnected = false
 
-    fun initFuesdLocationProviderClient(context: Context){
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
-    }
     override fun onLocationChanged(location: Location) {
         Timber.d("Location changed")
         updateLocation(location)
@@ -61,7 +55,7 @@ class GeoLocation(
         }
     }
 
-    fun enableMyLocation(activity: Activity, updateDeviceState: (DeviceState) -> Unit) {
+    fun enableMyLocation(activity: Activity,fusedLocationProviderClient: FusedLocationProviderClient, updateDeviceState: (DeviceState) -> Unit) {
         if (ActivityCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -81,10 +75,8 @@ class GeoLocation(
                 Timber.d( "Location got updated")
                 if (location != null) {
                     updateLocation(location)
-                    GPSConnnected = true
                     updateDeviceState(DeviceState.NoInternet)}
                 else {
-                    GPSConnnected = false
                     updateDeviceState(DeviceState.NoGPS)
                     requestUpdateLocation(activity)
                     Timber.d( "but it is null")

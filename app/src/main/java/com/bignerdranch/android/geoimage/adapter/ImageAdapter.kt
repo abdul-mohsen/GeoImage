@@ -1,9 +1,10 @@
-package com.bignerdranch.android.geoimage
+package com.bignerdranch.android.geoimage.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bignerdranch.android.geoimage.R
 import com.bignerdranch.android.geoimage.databinding.ImageItemBinding
 import com.bignerdranch.android.geoimage.model.Image
 import com.squareup.picasso.Callback
@@ -12,7 +13,7 @@ import com.squareup.picasso.Picasso
 import timber.log.Timber
 import java.lang.Exception
 
-class ImageAdapter: ListAdapter<Image,ImageAdapter.ImageViewHolder>(ImageDiffCallback()) {
+class ImageAdapter(): ListAdapter<Image, ImageAdapter.ImageViewHolder>(ImageDiffCallback()) {
     private lateinit var binding: ImageItemBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -46,7 +47,6 @@ class ImageAdapter: ListAdapter<Image,ImageAdapter.ImageViewHolder>(ImageDiffCal
                             .centerCrop()
                             .into(bindingHolder.imageViewHolder)
                     }
-
                 })
         }
     }
