@@ -13,7 +13,7 @@ import com.squareup.picasso.Picasso
 import timber.log.Timber
 import java.lang.Exception
 
-class ImageAdapter(): ListAdapter<Image, ImageAdapter.ImageViewHolder>(ImageDiffCallback()) {
+class ImageAdapter(val navigate: (String, String) -> Unit): ListAdapter<Image, ImageAdapter.ImageViewHolder>(ImageDiffCallback()) {
     private lateinit var binding: ImageItemBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -23,12 +23,16 @@ class ImageAdapter(): ListAdapter<Image, ImageAdapter.ImageViewHolder>(ImageDiff
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         Timber.d( "$position  ${getItem(position).url}  ")
-        holder.bind(getItem(position), position)
+        holder.bind(getItem(position))
     }
 
-    inner class ImageViewHolder(private val bindingHolder: ImageItemBinding): RecyclerView.ViewHolder(bindingHolder.root){
-        fun bind(image: Image, position: Int){
+    inner class ImageViewHolder(private val bindingHolder: ImageItemBinding)
+        : RecyclerView.ViewHolder(bindingHolder.root){
+        fun bind(image: Image){
             Timber.d( "___  ${image.id}")
+            bindingHolder.imageViewHolder.setOnClickListener {
+                navigate(image.url_o,image.id)
+            }
             bindingHolder.positionText.text = image.views.toString()
             Picasso.get().load(image.url)
                 .networkPolicy(NetworkPolicy.OFFLINE)

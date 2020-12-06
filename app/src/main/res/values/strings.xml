@@ -4,4 +4,6 @@
     <string name="no_nternet_error">No Internet Connection</string>
     <string name="loading">Loading</string>
     <string name="no_gps_error">No GPS Signal</string>
+    <string name="no_image_found">No image found</string>
+    <string name="image_preview">Image Preview</string>
 </resources>

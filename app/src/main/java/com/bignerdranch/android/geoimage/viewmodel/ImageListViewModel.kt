@@ -36,12 +36,14 @@ class ImageListViewModel: ViewModel() {
                     lon = location.longitude
                 )
                 val photosList = searchResponse.photos.photo.map { image ->
-                    Image(
-                        id = image.id,
-                        url = "https://live.staticflickr.com/${image.server}/${image.id}_${image.secret}.jpg",
-                        title = image.title,
-                        views = image.views,
-                        description = image.description
+                    Timber.d(image.url_o)
+                    Image(id = image.id,
+                            url = "https://live.staticflickr.com/${image.server}/${image.id}_" +
+                                    "${image.secret}_t.jpg",
+                            url_o = image.url_o,
+                            title = image.title,
+                            views = image.views,
+                            description = image.description
                     )
                 }
                 _imageListLiveData.postValue(photosList.sortedByDescending { it.views })

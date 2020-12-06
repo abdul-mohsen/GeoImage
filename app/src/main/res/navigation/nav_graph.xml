@@ -9,5 +9,18 @@
         android:id="@+id/imageList"
         android:name="com.bignerdranch.android.geoimage.control.ImageList"
         android:label="ImageList"
-        tools:layout="@layout/fragment_image_list"/>
+        tools:layout="@layout/fragment_image_list">
+        <action
+            android:id="@+id/action_imageList_to_imagePreview"
+            app:destination="@id/imagePreview" />
+    </fragment>
+    <fragment
+        android:id="@+id/imagePreview"
+        android:name="com.bignerdranch.android.geoimage.control.ImagePreview"
+        android:label="ImagePreview"
+        tools:layout="@layout/fragment_preview">
+        <argument
+            android:name="url"
+            app:argType="string" />
+    </fragment>
 </navigation>

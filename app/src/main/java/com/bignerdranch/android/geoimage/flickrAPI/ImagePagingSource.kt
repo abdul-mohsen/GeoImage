@@ -1,7 +1,6 @@
 package com.bignerdranch.android.geoimage.flickrAPI
 
 import androidx.paging.PagingSource
-import com.bignerdranch.android.geoimage.flickrAPI.ImageRepository
 import com.bignerdranch.android.geoimage.model.Image
 import retrofit2.HttpException
 import java.io.IOException

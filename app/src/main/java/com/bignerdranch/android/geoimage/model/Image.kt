@@ -9,5 +9,6 @@ data class Image(
     var secret: String = "",
     var server: String = "",
     var views: Int = 0,
-    var description: String = ""
+    var description: String = "",
+    var url_o: String = ""
 )

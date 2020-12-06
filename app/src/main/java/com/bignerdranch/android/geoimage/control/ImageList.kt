@@ -22,7 +22,8 @@ import com.bignerdranch.android.geoimage.viewmodel.ImageListViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import timber.log.Timber
-
+import android.location.Geocoder
+import androidx.navigation.fragment.findNavController
 
 class ImageList: Fragment() {
     private lateinit var binding: FragmentImageListBinding
@@ -30,7 +31,7 @@ class ImageList: Fragment() {
     private lateinit var imageListViewModel: ImageListViewModel
     private lateinit var geoLocation: GeoLocation
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-
+    private lateinit var geocoder: Geocoder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +41,7 @@ class ImageList: Fragment() {
                 imageListViewModel.updateLocation(location)
         }
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        geocoder = Geocoder(requireContext())
     }
 
     override fun onCreateView(
@@ -49,7 +51,11 @@ class ImageList: Fragment() {
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
         binding = FragmentImageListBinding.inflate(inflater, container, false)
-        imageAdapter = ImageAdapter()
+        imageAdapter = ImageAdapter{ url: String, _: String->
+            findNavController().navigate(
+                ImageListDirections.actionImageListToImagePreview(url)
+            )
+        }
         binding.grid.apply {
             this.adapter = imageAdapter
             layoutManager = GridLayoutManager(requireContext(), 3)
@@ -58,10 +64,15 @@ class ImageList: Fragment() {
         // observe the location change
         imageListViewModel.location.observe(viewLifecycleOwner, { location ->
             binding.textError.visibility = View.VISIBLE
+            val geoAddress = geocoder.getFromLocation(
+                location.latitude,
+                location.longitude,
+                1)[0]
             if (imageListViewModel.deviceStateLiveData.value == DeviceState.Good){
+                requireActivity().title = "${geoAddress.countryName}  ${geoAddress.featureName
+                    .takeIf { it != "Unnamed Road" } ?: ""}"
                 binding.textError.text = getString(R.string.loading)
                 Timber.d("hmm  ${location.latitude} ${location.longitude} ")
-//                imageListViewModel.loadPhotos(location)
                 imageListViewModel.loadPhotos(location)
             }
         })
@@ -69,7 +80,8 @@ class ImageList: Fragment() {
         // observe the imageList
         imageListViewModel.imageListLiveData.observe(viewLifecycleOwner, { list ->
             Timber.d( "should be once ${list.size}")
-            binding.textError.visibility = View.GONE
+            if (list.isEmpty()) binding.textError.text = getString(R.string.no_image_found)
+            else binding.textError.visibility = View.GONE
             imageAdapter.submitList(list)
         })
 
@@ -101,15 +113,9 @@ class ImageList: Fragment() {
 
         // refresh
         binding.swipeRefresh.setOnRefreshListener {
-//            imageListViewModel.invalidateDateSource()
-            geoLocation.enableMyLocation(requireActivity(), fusedLocationProviderClient)
-            { deviceState ->
-                imageListViewModel.updateDeviceState(deviceState)
-            }
-
+            geoLocation.requestUpdateLocation(requireContext())
             binding.swipeRefresh.isRefreshing = false
         }
-
         return binding.root
     }
 

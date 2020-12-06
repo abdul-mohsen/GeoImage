@@ -21,16 +21,13 @@
         android:layout_below="@id/text_error"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true">
-        <androidx.recyclerview.widget.RecyclerView
 
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/grid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/image_item">
-
-        </androidx.recyclerview.widget.RecyclerView>
+            tools:listitem="@layout/image_item"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
 
 </RelativeLayout>

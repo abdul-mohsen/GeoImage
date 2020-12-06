@@ -27,7 +27,7 @@ class GeoLocation(
         updateLocation(location)
     }
 
-    private fun requestUpdateLocation(context: Context){
+    fun requestUpdateLocation(context: Context){
         val locationManager =  context.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
         if (ActivityCompat.checkSelfPermission(
                 context,
