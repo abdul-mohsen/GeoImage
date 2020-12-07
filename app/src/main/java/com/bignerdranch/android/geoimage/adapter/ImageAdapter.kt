@@ -22,16 +22,16 @@ class ImageAdapter(val navigate: (String, String) -> Unit): ListAdapter<Image, I
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        Timber.d( "$position  ${getItem(position).url}  ")
+//        Timber.d( "$position  ${getItem(position).url}  ")
         holder.bind(getItem(position))
     }
 
     inner class ImageViewHolder(private val bindingHolder: ImageItemBinding)
         : RecyclerView.ViewHolder(bindingHolder.root){
         fun bind(image: Image){
-            Timber.d( "___  ${image.id}")
+//            Timber.d( "___  ${image.id}")
             bindingHolder.imageViewHolder.setOnClickListener {
-                navigate(image.url_o,image.id)
+                navigate(image.url_o,image.title)
             }
             bindingHolder.positionText.text = image.views.toString()
             Picasso.get().load(image.url)

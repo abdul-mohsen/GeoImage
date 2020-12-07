@@ -55,7 +55,9 @@ class GeoLocation(
         }
     }
 
-    fun enableMyLocation(activity: Activity,fusedLocationProviderClient: FusedLocationProviderClient, updateDeviceState: (DeviceState) -> Unit) {
+    fun enableMyLocation(activity: Activity,
+                         fusedLocationProviderClient: FusedLocationProviderClient,
+                         updateDeviceState: (DeviceState) -> Unit) {
         if (ActivityCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -75,7 +77,8 @@ class GeoLocation(
                 Timber.d( "Location got updated")
                 if (location != null) {
                     updateLocation(location)
-                    updateDeviceState(DeviceState.NoInternet)}
+                    updateDeviceState(DeviceState.NoInternet)
+                }
                 else {
                     updateDeviceState(DeviceState.NoGPS)
                     requestUpdateLocation(activity)

@@ -38,7 +38,14 @@ class ImageList: Fragment() {
 
         imageListViewModel = ViewModelProvider(this).get(ImageListViewModel::class.java)
         geoLocation = GeoLocation(LOCATION_PERMISSION_REQUEST_CODE) { location:Location ->
+            val vLocation = imageListViewModel.location.value
+            if (vLocation == null || (location.latitude != vLocation.latitude &&
+                        location.longitude != vLocation.longitude)) {
                 imageListViewModel.updateLocation(location)
+                Timber.d("Got an update")
+            } else {
+                Timber.d("Got you")
+            }
         }
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
         geocoder = Geocoder(requireContext())
@@ -51,9 +58,9 @@ class ImageList: Fragment() {
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
         binding = FragmentImageListBinding.inflate(inflater, container, false)
-        imageAdapter = ImageAdapter{ url: String, _: String->
+        imageAdapter = ImageAdapter{ url: String, title: String ->
             findNavController().navigate(
-                ImageListDirections.actionImageListToImagePreview(url)
+                ImageListDirections.actionImageListToImagePreview(url, title)
             )
         }
         binding.grid.apply {
@@ -84,10 +91,12 @@ class ImageList: Fragment() {
             else binding.textError.visibility = View.GONE
             imageAdapter.submitList(list)
         })
+        Timber.d("Set up hmmm")
 
 
         // observe device state
         imageListViewModel.deviceStateLiveData.observe(viewLifecycleOwner, { deviceState ->
+            Timber.d("State is updating")
             when(deviceState){
                 DeviceState.NoGPS -> {
                     binding.textError.text = getString(R.string.no_gps_error)
@@ -97,14 +106,14 @@ class ImageList: Fragment() {
                 DeviceState.NoInternet ->{
                     if (isInternetAvailable(requireContext()))
                         imageListViewModel.updateDeviceState(DeviceState.Good)
-                    else{
+                    else {
                         binding.textError.text = getString(R.string.no_nternet_error)
                         binding.textError.visibility = View.VISIBLE
                         Timber.d( "No Internet")
                     }
                 }
                 DeviceState.Good ->{
-                    imageListViewModel.updateLocation(imageListViewModel.location.value!!)
+                    geoLocation.requestUpdateLocation(requireContext())
                     Timber.d( "All good")
                 }
                 else -> Timber.d("The state is null")
@@ -127,9 +136,11 @@ class ImageList: Fragment() {
             LOCATION_PERMISSION_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() and (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // Enable the my location layer if the permission has been granted.
+                    Timber.d("enableMyLocation has been called")
                     geoLocation.enableMyLocation(requireActivity(), fusedLocationProviderClient)
                     { deviceState ->
-                        imageListViewModel.updateDeviceState(deviceState)
+                        if (deviceState != imageListViewModel.deviceStateLiveData.value)
+                            imageListViewModel.updateDeviceState(deviceState)
                     }
                 }
             }
@@ -168,9 +179,12 @@ class ImageList: Fragment() {
 
     override fun onResume() {
         super.onResume()
-        geoLocation.enableMyLocation(requireActivity(), fusedLocationProviderClient)
-        { deviceState ->
-            imageListViewModel.updateDeviceState(deviceState)
+        if (imageListViewModel.deviceStateLiveData.value != DeviceState.Good){
+            Timber.d("enableMyLocation has been called from onResume")
+            geoLocation.enableMyLocation(requireActivity(), fusedLocationProviderClient) { deviceState ->
+                Timber.d("enableMyLocation has been called from onResume X2")
+                imageListViewModel.updateDeviceState(deviceState)
+            }
         }
     }
 

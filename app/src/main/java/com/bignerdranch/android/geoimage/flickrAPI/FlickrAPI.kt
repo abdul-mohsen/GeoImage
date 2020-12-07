@@ -9,9 +9,6 @@ import retrofit2.http.Url
 
 interface FlickrAPI {
 
-    @GET
-    fun fetchUrlImages(@Url url:String): Call<ResponseBody>
-
     @GET("services/rest?method=flickr.photos.search")
     suspend fun searchImages(
         @Query("lat") lat: Double = 0.0,

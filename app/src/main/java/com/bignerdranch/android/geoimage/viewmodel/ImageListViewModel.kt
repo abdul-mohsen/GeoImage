@@ -12,11 +12,11 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ImageListViewModel: ViewModel() {
-    private val repository:ImageRepository = ImageRepository()
+    private val repository: ImageRepository = ImageRepository()
 
-    private val _imageListLiveData =  MutableLiveData<List<Image>>()
+    private val _imageListLiveData = MutableLiveData<List<Image>>()
     val imageListLiveData: LiveData<List<Image>>
-        get() =  _imageListLiveData
+        get() = _imageListLiveData
 
     private var _location: MutableLiveData<Location> = MutableLiveData<Location>()
     val location: LiveData<Location>
@@ -26,56 +26,26 @@ class ImageListViewModel: ViewModel() {
     val deviceStateLiveData
         get() = _deviceStateLiveData
 
-
-
     fun loadPhotos(location: Location) {
         viewModelScope.launch {
             try {
-                val searchResponse = repository.client.searchImages(
-                    lat = location.latitude,
-                    lon = location.longitude
+                val photosList = repository.getSearch(
+                    latitude = location.latitude,
+                    longitude = location.longitude
                 )
-                val photosList = searchResponse.photos.photo.map { image ->
-                    Timber.d(image.url_o)
-                    Image(id = image.id,
-                            url = "https://live.staticflickr.com/${image.server}/${image.id}_" +
-                                    "${image.secret}_t.jpg",
-                            url_o = image.url_o,
-                            title = image.title,
-                            views = image.views,
-                            description = image.description
-                    )
-                }
                 _imageListLiveData.postValue(photosList.sortedByDescending { it.views })
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 Timber.d("boom error")
             }
         }
     }
 
-    fun updateLocation(cLocation: Location){
+    fun updateLocation(cLocation: Location) {
         _location.postValue(cLocation)
+        Timber.d("I got an update")
     }
 
-    fun updateDeviceState(deviceState: DeviceState){
+    fun updateDeviceState(deviceState: DeviceState) {
         _deviceStateLiveData.postValue(deviceState)
     }
-
-//    private lateinit var imagePagingSource: ImagePagingSource
-//    lateinit var flow: Flow<PagingData<Image>>
-//
-//    fun loadPhotos2(location: Location){
-//        imagePagingSource = ImagePagingSource(
-//            repository,
-//            lat = location.latitude,
-//            lon = location.longitude)
-//
-//        flow = Pager(PagingConfig(pageSize = 50)){
-//            imagePagingSource
-//        }.flow.cachedIn(viewModelScope)
-//    }
-//
-//    fun invalidateDateSource() =
-//        imagePagingSource.invalidate()
-
 }
