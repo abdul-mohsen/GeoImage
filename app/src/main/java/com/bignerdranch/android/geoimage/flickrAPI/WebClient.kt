@@ -12,6 +12,7 @@ class WebClient{
         val flickrAPI: FlickrAPI = Retrofit.Builder().baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(OkHttpClient.Builder().addInterceptor(FlickrInterceptor()).build())
-            .build().create(FlickrAPI::class.java)
+            .build()
+            .create(FlickrAPI::class.java)
     }
 }
