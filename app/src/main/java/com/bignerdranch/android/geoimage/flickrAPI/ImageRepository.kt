@@ -1,18 +1,16 @@
 package com.bignerdranch.android.geoimage.flickrAPI
 
-import com.bignerdranch.android.geoimage.`interface`.ImageLoader
+import com.bignerdranch.android.geoimage.interfaces.ImageLoader
 import com.bignerdranch.android.geoimage.model.Image
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flatMapMerge
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
+import timber.log.Timber
 
 object ImageRepository: ImageLoader {
      private val client = WebClient.flickrAPI
 
      @FlowPreview
-     override suspend fun loadPhotos(latitude: Double, longitude: Double, pageCount: Int = 1)
+     override suspend fun loadPhotos(latitude: Double, longitude: Double, pageCount: Int)
      : Flow<List<Image>> = (1..pageCount).asFlow().flatMapMerge(concurrency = 4) { page ->
           flow {
                emit(
@@ -32,6 +30,8 @@ object ImageRepository: ImageLoader {
                     }
                )
           }
+     }.catch { e ->
+          Timber.d(e.toString())
      }
 
 }

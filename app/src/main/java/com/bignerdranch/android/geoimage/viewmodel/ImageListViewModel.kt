@@ -8,10 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.bignerdranch.android.geoimage.flickrAPI.ImageRepository
 import com.bignerdranch.android.geoimage.model.DeviceState
 import com.bignerdranch.android.geoimage.model.Image
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class ImageListViewModel: ViewModel() {
     private val repository: ImageRepository = ImageRepository
@@ -20,36 +19,32 @@ class ImageListViewModel: ViewModel() {
     val imageListLiveData: LiveData<List<Image>>
         get() = _imageListLiveData
 
-    private var _location: MutableLiveData<Location> = MutableLiveData<Location>()
-    val location: LiveData<Location>
-        get() = _location
+    private val _location: MutableStateFlow<Location> = MutableStateFlow(Location("empty"))
+    val location: StateFlow<Location> = _location
 
-    private var _deviceStateLiveData: MutableLiveData<DeviceState> = MutableLiveData<DeviceState>()
-    val deviceStateLiveData
-        get() = _deviceStateLiveData
+    private val _deviceStateLiveData: MutableStateFlow<DeviceState> = MutableStateFlow(DeviceState.NoGPS)
+    val deviceState: StateFlow<DeviceState> = _deviceStateLiveData
 
+    @FlowPreview
     fun loadPhotos(location: Location) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val photosList: MutableList<Image> = mutableListOf()
-                repository.loadPhotos(
-                    latitude = location.latitude,
-                    longitude = location.longitude,
-                    pageCount = 4).collect { value ->
-                    photosList.addAll(value)
-                }
-                _imageListLiveData.postValue(photosList.sortedByDescending { it.views })
-            } catch (e: Exception) {
-                e.printStackTrace()
+        viewModelScope.launch {
+            val photosList: MutableList<Image> = mutableListOf()
+            repository.loadPhotos(
+                latitude = location.latitude,
+                longitude = location.longitude,
+                pageCount = 4).collect { value ->
+                photosList.addAll(value)
             }
+            _imageListLiveData.postValue(photosList.sortedByDescending { it.views })
+
         }
     }
 
     fun updateLocation(cLocation: Location) {
-        _location.postValue(cLocation)
+        _location.value = cLocation
     }
 
     fun updateDeviceState(deviceState: DeviceState) {
-        _deviceStateLiveData.postValue(deviceState)
+        _deviceStateLiveData.value = deviceState
     }
 }

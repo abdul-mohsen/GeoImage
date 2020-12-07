@@ -1,4 +1,4 @@
-package com.bignerdranch.android.geoimage.`interface`
+package com.bignerdranch.android.geoimage.interfaces
 
 import com.bignerdranch.android.geoimage.model.Image
 import kotlinx.coroutines.flow.Flow

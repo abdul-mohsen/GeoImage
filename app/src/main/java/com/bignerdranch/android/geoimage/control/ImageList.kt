@@ -25,6 +25,8 @@ import timber.log.Timber
 import android.location.Geocoder
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collect
 
 class ImageList: Fragment() {
     private lateinit var binding: FragmentImageListBinding
@@ -63,22 +65,6 @@ class ImageList: Fragment() {
             layoutManager = GridLayoutManager(requireContext(), 3)
         }
 
-        // observe the location change
-        imageListViewModel.location.observe(viewLifecycleOwner, { location ->
-            binding.textError.visibility = View.VISIBLE
-            val geoAddress = geocoder.getFromLocation(
-                location.latitude,
-                location.longitude,
-                1)[0]
-            if (imageListViewModel.deviceStateLiveData.value == DeviceState.Good){
-                requireActivity().title = "${geoAddress.countryName}  ${geoAddress.featureName
-                    .takeIf { it != "Unnamed Road" } ?: ""}"
-                binding.textError.text = getString(R.string.loading)
-                Timber.d("hmm  ${location.latitude} ${location.longitude} ")
-                imageListViewModel.loadPhotos(location)
-            }
-        })
-
         // observe the imageList
         imageListViewModel.imageListLiveData.observe(viewLifecycleOwner, { list ->
             Timber.d( "should be once ${list.size}")
@@ -91,31 +77,17 @@ class ImageList: Fragment() {
             imageListViewModel
         }
 
-        // observe device state
-        imageListViewModel.deviceStateLiveData.observe(viewLifecycleOwner, { deviceState ->
-            Timber.d("State is updating")
-            when(deviceState){
-                DeviceState.NoGPS -> {
-                    binding.textError.text = getString(R.string.no_gps_error)
-                    binding.textError.visibility = View.VISIBLE
-                    Timber.d( "No GPS signal")
-                }
-                DeviceState.NoInternet ->{
-                    if (isInternetAvailable(requireContext()))
-                        imageListViewModel.updateDeviceState(DeviceState.Good)
-                    else {
-                        binding.textError.text = getString(R.string.no_nternet_error)
-                        binding.textError.visibility = View.VISIBLE
-                        Timber.d( "No Internet")
-                    }
-                }
-                DeviceState.Good ->{
-                    geoLocation.requestUpdateLocation(requireContext())
-                    Timber.d( "All good")
-                }
-                else -> Timber.d("The state is null")
-            }
-        })
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+
+
+            // observe device state
+            observeState()
+
+            // observe the location change
+            observerLocation()
+        }
+
+
 
         // refresh
         binding.swipeRefresh.setOnRefreshListener {
@@ -136,7 +108,7 @@ class ImageList: Fragment() {
                     Timber.d("enableMyLocation has been called")
                     geoLocation.enableMyLocation(requireActivity(), fusedLocationProviderClient)
                     { deviceState ->
-                        if (deviceState != imageListViewModel.deviceStateLiveData.value)
+                        if (deviceState != imageListViewModel.deviceState.value)
                             imageListViewModel.updateDeviceState(deviceState)
                     }
                 }
@@ -176,13 +148,60 @@ class ImageList: Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if (imageListViewModel.deviceStateLiveData.value != DeviceState.Good){
+        if (imageListViewModel.deviceState.value != DeviceState.Good){
             Timber.d("enableMyLocation has been called from onResume")
             geoLocation.enableMyLocation(requireActivity(), fusedLocationProviderClient) { deviceState ->
                 Timber.d("enableMyLocation has been called from onResume X2")
                 imageListViewModel.updateDeviceState(deviceState)
             }
         }
+    }
+
+    private suspend fun observeState(){
+        imageListViewModel.deviceState.collect {deviceState ->
+            Timber.d("State is updating")
+            when(deviceState){
+                DeviceState.NoGPS -> {
+                    binding.textError.text = getString(R.string.no_gps_error)
+                    binding.textError.visibility = View.VISIBLE
+                    Timber.d( "No GPS signal")
+                }
+                DeviceState.NoInternet ->{
+                    if (isInternetAvailable(requireContext()))
+                        imageListViewModel.updateDeviceState(DeviceState.Good)
+                    else {
+                        binding.textError.text = getString(R.string.no_nternet_error)
+                        binding.textError.visibility = View.VISIBLE
+                        Timber.d( "No Internet")
+                    }
+                }
+                DeviceState.Good ->{
+                    geoLocation.requestUpdateLocation(requireContext())
+                    Timber.d( "All good")
+                }
+                else -> Timber.d("The state is null")
+            }
+        }
+
+    }
+
+    @FlowPreview
+    private suspend fun observerLocation(){
+        imageListViewModel.location.collect{ location ->
+            binding.textError.visibility = View.VISIBLE
+            val geoAddress = geocoder.getFromLocation(
+                location.latitude,
+                location.longitude,
+                1)[0]
+            if (imageListViewModel.deviceState.value == DeviceState.Good){
+                requireActivity().title = "${geoAddress.countryName}  ${geoAddress.featureName
+                    .takeIf { it != "Unnamed Road" } ?: ""}"
+                binding.textError.text = getString(R.string.loading)
+                Timber.d("hmm  ${location.latitude} ${location.longitude} ")
+                imageListViewModel.loadPhotos(location)
+            }
+        }
+
     }
 
     companion object {
