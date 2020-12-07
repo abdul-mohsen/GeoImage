@@ -23,6 +23,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import timber.log.Timber
 import android.location.Geocoder
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 
 class ImageList: Fragment() {
@@ -38,14 +39,8 @@ class ImageList: Fragment() {
 
         imageListViewModel = ViewModelProvider(this).get(ImageListViewModel::class.java)
         geoLocation = GeoLocation(LOCATION_PERMISSION_REQUEST_CODE) { location:Location ->
-            val vLocation = imageListViewModel.location.value
-            if (vLocation == null || (location.latitude != vLocation.latitude &&
-                        location.longitude != vLocation.longitude)) {
-                imageListViewModel.updateLocation(location)
-                Timber.d("Got an update")
-            } else {
-                Timber.d("Got you")
-            }
+            imageListViewModel.updateLocation(location)
+            Timber.d("Got an update")
         }
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
         geocoder = Geocoder(requireContext())
@@ -91,8 +86,10 @@ class ImageList: Fragment() {
             else binding.textError.visibility = View.GONE
             imageAdapter.submitList(list)
         })
-        Timber.d("Set up hmmm")
 
+        lifecycleScope.launchWhenStarted {
+            imageListViewModel
+        }
 
         // observe device state
         imageListViewModel.deviceStateLiveData.observe(viewLifecycleOwner, { deviceState ->

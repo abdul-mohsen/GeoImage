@@ -8,11 +8,13 @@ import androidx.lifecycle.viewModelScope
 import com.bignerdranch.android.geoimage.flickrAPI.ImageRepository
 import com.bignerdranch.android.geoimage.model.DeviceState
 import com.bignerdranch.android.geoimage.model.Image
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ImageListViewModel: ViewModel() {
-    private val repository: ImageRepository = ImageRepository()
+    private val repository: ImageRepository = ImageRepository
 
     private val _imageListLiveData = MutableLiveData<List<Image>>()
     val imageListLiveData: LiveData<List<Image>>
@@ -27,22 +29,24 @@ class ImageListViewModel: ViewModel() {
         get() = _deviceStateLiveData
 
     fun loadPhotos(location: Location) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                val photosList = repository.getSearch(
+                val photosList: MutableList<Image> = mutableListOf()
+                repository.loadPhotos(
                     latitude = location.latitude,
-                    longitude = location.longitude
-                )
+                    longitude = location.longitude,
+                    pageCount = 4).collect { value ->
+                    photosList.addAll(value)
+                }
                 _imageListLiveData.postValue(photosList.sortedByDescending { it.views })
             } catch (e: Exception) {
-                Timber.d("boom error")
+                e.printStackTrace()
             }
         }
     }
 
     fun updateLocation(cLocation: Location) {
         _location.postValue(cLocation)
-        Timber.d("I got an update")
     }
 
     fun updateDeviceState(deviceState: DeviceState) {

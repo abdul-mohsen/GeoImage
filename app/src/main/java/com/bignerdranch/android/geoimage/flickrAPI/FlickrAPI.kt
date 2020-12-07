@@ -15,7 +15,7 @@ interface FlickrAPI {
         @Query("lon") lon: Double = 0.0,
         @Query("radius") radius: Int = 15,
         @Query("page") page: Int = 1,
-        @Query("per_page") perPage: Int = 1000
+        @Query("per_page") perPage: Int = 250
 
     ): FlickrResponse
 }

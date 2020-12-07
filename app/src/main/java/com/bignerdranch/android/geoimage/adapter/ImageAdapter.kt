@@ -31,7 +31,9 @@ class ImageAdapter(val navigate: (String, String) -> Unit): ListAdapter<Image, I
         fun bind(image: Image){
 //            Timber.d( "___  ${image.id}")
             bindingHolder.imageViewHolder.setOnClickListener {
-                navigate(image.url_o,image.title)
+                Timber.d("This is the original link ${image.url_o} else ${image.url}")
+                if (image.url_o.isBlank()) navigate(image.url.replace("_t", "_b"),image.title)
+                else navigate(image.url_o,image.title)
             }
             bindingHolder.positionText.text = image.views.toString()
             Picasso.get().load(image.url)
