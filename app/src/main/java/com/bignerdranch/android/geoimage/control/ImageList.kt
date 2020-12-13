@@ -27,32 +27,24 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
+import java.util.Locale
 
-class ImageList: Fragment() {
+class ImageList : Fragment() {
     private lateinit var binding: FragmentImageListBinding
     private lateinit var imageAdapter: ImageAdapter
     private lateinit var imageListViewModel: ImageListViewModel
     private lateinit var geoLocation: GeoLocation
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var geocoder: Geocoder
-    private var geoAddress: Address = Address(Locale("use"))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         imageListViewModel = ViewModelProvider(this).get(ImageListViewModel::class.java)
-        geoLocation = GeoLocation(LOCATION_PERMISSION_REQUEST_CODE) { location:Location ->
-            imageListViewModel.updateLocation(location)
-            geoAddress = geocoder.getFromLocation(
-                location.latitude,
-                location.longitude,
-                1)[0]
-            Timber.d("Got an update")
-        }
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
         geocoder = Geocoder(requireContext())
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
     @FlowPreview
@@ -63,7 +55,7 @@ class ImageList: Fragment() {
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
         binding = FragmentImageListBinding.inflate(inflater, container, false)
-        imageAdapter = ImageAdapter{ url: String, title: String ->
+        imageAdapter = ImageAdapter { url: String, title: String ->
             findNavController().navigate(
                 ImageListDirections.actionImageListToImagePreview(url, title)
             )
@@ -73,19 +65,34 @@ class ImageList: Fragment() {
             layoutManager = GridLayoutManager(requireContext(), 3)
         }
 
+        geoLocation = GeoLocation.getInstance(LOCATION_PERMISSION_REQUEST_CODE) { location: Location ->
+            updateState(DeviceState.Updating)
+            imageListViewModel.updateLocation(location)
+            val addressResult = geocoder.getFromLocation(
+                location.latitude,
+                location.longitude,
+                1
+            )
+            if (addressResult.size > 0) imageListViewModel.updateGeoAddress(addressResult.first())
+            else imageListViewModel.updateGeoAddress(Address(Locale("Unknown")))
+            Timber.d("Got an update")
+        }
+
         // observe device state
         observeState()
 
-       // observe the location change
+        // observe the location change
         observerLocation()
 
         // observe the imageList
         observeImageList()
 
+        // observe the address
+        observeAddress()
 
         // refresh
         binding.swipeRefresh.setOnRefreshListener {
-            geoLocation.requestUpdateLocation(requireContext())
+            updateState(DeviceState.NoInternet)
             binding.swipeRefresh.isRefreshing = false
         }
         return binding.root
@@ -94,16 +101,16 @@ class ImageList: Fragment() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray) {
-        when(requestCode){
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
             LOCATION_PERMISSION_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() and (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // Enable the my location layer if the permission has been granted.
                     Timber.d("enableMyLocation has been called")
-                    geoLocation.enableMyLocation(requireActivity(), fusedLocationProviderClient)
-                    { deviceState ->
-                        if (deviceState != imageListViewModel.deviceState.value)
-                            imageListViewModel.updateDeviceState(deviceState)
+                    geoLocation.enableMyLocation(requireActivity(), fusedLocationProviderClient) { deviceState ->
+                        if (deviceState != imageListViewModel.currentState())
+                            updateState(deviceState)
                     }
                 }
             }
@@ -142,37 +149,42 @@ class ImageList: Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if (imageListViewModel.deviceState.value != DeviceState.Good){
+        if (imageListViewModel.currentState().ordinal < DeviceState.Good.ordinal) {
             Timber.d("enableMyLocation has been called from onResume")
             geoLocation.enableMyLocation(requireActivity(), fusedLocationProviderClient) { deviceState ->
                 Timber.d("enableMyLocation has been called from onResume X2")
-                imageListViewModel.updateDeviceState(deviceState)
+                updateState(deviceState)
             }
         }
     }
 
-    private fun observeState(){
+    private fun observeState() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            imageListViewModel.deviceState.collect {deviceState ->
-                Timber.d("State is updating")
-                when(deviceState){
+            imageListViewModel.deviceState.collect { deviceState ->
+                Timber.d("State is updating $deviceState")
+                when (deviceState) {
                     DeviceState.NoGPS -> {
                         binding.textError.text = getString(R.string.no_gps_error)
                         binding.textError.visibility = View.VISIBLE
-                        Timber.d( "No GPS signal")
+                        Timber.d("No GPS signal")
                     }
-                    DeviceState.NoInternet ->{
+                    DeviceState.NoInternet -> {
                         if (isInternetAvailable(requireContext()))
                             imageListViewModel.updateDeviceState(DeviceState.Good)
                         else {
                             binding.textError.text = getString(R.string.no_nternet_error)
                             binding.textError.visibility = View.VISIBLE
-                            Timber.d( "No Internet")
+                            Timber.d("No Internet")
                         }
                     }
-                    DeviceState.Good ->{
+                    DeviceState.Good -> {
                         geoLocation.requestUpdateLocation(requireContext())
-                        Timber.d( "All good")
+                        imageListViewModel.updateDeviceState(DeviceState.Updating)
+                        Timber.d("All good")
+                    }
+                    DeviceState.Updating -> {
+                    }
+                    DeviceState.Complete -> {
                     }
                 }
             }
@@ -180,34 +192,49 @@ class ImageList: Fragment() {
     }
 
     @FlowPreview
-    private fun observerLocation(){
+    private fun observerLocation() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             imageListViewModel.location.collect { location ->
                 binding.textError.visibility = View.VISIBLE
                 Timber.d("should be called")
-                if (imageListViewModel.deviceState.value == DeviceState.Good) {
-                    requireActivity().title = "${geoAddress.countryName}  ${
-                        geoAddress.featureName
-                            .takeIf { it != "Unnamed Road" } ?: ""
-                    }"
+                if (imageListViewModel.currentState() == DeviceState.Updating) {
                     binding.textError.text = getString(R.string.loading)
                     Timber.d("hmm  ${location.latitude} ${location.longitude} ")
                     imageListViewModel.loadPhotos(location)
+                    imageListViewModel.updateDeviceState(DeviceState.Complete)
                 }
             }
         }
-
     }
 
-    private fun observeImageList(){
+    private fun observeImageList() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            imageListViewModel.imageList.collect{ imageList ->
-                Timber.d( "should be once ${imageList.size}")
+            imageListViewModel.imageList.collect { imageList ->
+                Timber.d("should be once ${imageList.size}")
                 if (imageList.isEmpty()) binding.textError.text = getString(R.string.no_image_found)
                 else binding.textError.visibility = View.GONE
                 imageAdapter.submitList(imageList)
             }
         }
+    }
+
+    private fun observeAddress() {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            imageListViewModel.geoAddress.collect { address ->
+                requireActivity().title = "${address.countryName}: ${address.adminArea}"
+            }
+        }
+    }
+
+    private fun updateState(deviceState: DeviceState) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            imageListViewModel.updateDeviceState(deviceState)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        GeoLocation.destory()
     }
 
     companion object {

@@ -1,6 +1,7 @@
 package com.bignerdranch.android.geoimage
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -16,8 +17,7 @@ import com.bignerdranch.android.geoimage.model.DeviceState
 import com.google.android.gms.location.FusedLocationProviderClient
 import timber.log.Timber
 
-
-class GeoLocation(
+class GeoLocation private constructor(
     private val LOCATION_PERMISSION_REQUEST_CODE: Int = 1,
     private val updateLocation: (Location) -> Unit,
 ) : LocationListener {
@@ -27,21 +27,12 @@ class GeoLocation(
         updateLocation(location)
     }
 
-    fun requestUpdateLocation(context: Context){
-        val locationManager =  context.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
-        if(locationManager != null){
+    fun requestUpdateLocation(context: Context) {
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
+        if (checkPermission(context)) return
+        if (locationManager != null) {
             val isGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-            if (!isGPS){
+            if (!isGPS) {
                 val gpsOptionsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(context, gpsOptionsIntent, null)
             } else {
@@ -55,40 +46,62 @@ class GeoLocation(
         }
     }
 
-    fun enableMyLocation(activity: Activity,
-                         fusedLocationProviderClient: FusedLocationProviderClient,
-                         updateDeviceState: (DeviceState) -> Unit) {
-        if (ActivityCompat.checkSelfPermission(
-                activity,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                activity,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Permission to access the location is missing. Show rationale and request permission
+    @SuppressLint("MissingPermission")
+    fun enableMyLocation(
+        activity: Activity,
+        fusedLocationProviderClient: FusedLocationProviderClient,
+        updateDeviceState: (DeviceState) -> Unit
+    ) {
+        if (checkPermission(activity)) {
             ActivityCompat.requestPermissions(
                 activity,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 LOCATION_PERMISSION_REQUEST_CODE
             )
         } else {
-            fusedLocationProviderClient.lastLocation.addOnSuccessListener{ location ->
-                Timber.d( "Location got updated")
+            fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
+                Timber.d("Location got updated")
                 if (location != null) {
                     updateLocation(location)
                     updateDeviceState(DeviceState.NoInternet)
-                }
-                else {
+                } else {
                     updateDeviceState(DeviceState.NoGPS)
                     requestUpdateLocation(activity)
-                    Timber.d( "but it is null")
+                    Timber.d("but it is null")
                 }
             }
         }
     }
 
+    private fun checkPermission(context: Context): Boolean = ActivityCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    ) != PackageManager.PERMISSION_GRANTED
+
     override fun onProviderEnabled(provider: String) { }
-    override fun onProviderDisabled(provider: String) {  }
+
+    override fun onProviderDisabled(provider: String) { }
+
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+
+    companion object {
+        var geoLocation: GeoLocation? = null
+        fun getInstance(
+            LOCATION_PERMISSION_REQUEST_CODE: Int = 1,
+            updateLocation: (Location) -> Unit,
+        ): GeoLocation {
+            if (geoLocation == null)
+                geoLocation = GeoLocation(LOCATION_PERMISSION_REQUEST_CODE, updateLocation)
+            else
+                Timber.d("Old object being used")
+            return geoLocation!!
+        }
+
+        fun destory() {
+            geoLocation = null
+        }
+    }
 }

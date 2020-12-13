@@ -1,6 +1,5 @@
 package com.bignerdranch.android.geoimage.flickrAPI
 
-import com.bignerdranch.android.geoimage.flickrAPI.ImageRepository.loadPhotos
 import com.bignerdranch.android.geoimage.model.FlickrResponse
 import com.bignerdranch.android.geoimage.model.Image
 import com.bignerdranch.android.geoimage.model.ImageResponse
@@ -30,7 +29,6 @@ class ImageRepositoryTest {
     fun setUp() {
         client = mock()
         imageRepository = ImageRepository
-
     }
 
     @After
@@ -42,7 +40,7 @@ class ImageRepositoryTest {
     @Test
     fun loadListOfImagesSuccessfully(): Unit = runBlocking {
         val image = Image(
-            url="https://live.staticflickr.com//__t.jpg"
+            url = "https://live.staticflickr.com//__t.jpg"
         )
         val flowImageList = flow<List<Image>> { listOf(image) }
         val imageResponse = ImageResponse()
@@ -61,11 +59,9 @@ class ImageRepositoryTest {
         flow.collect { imageList ->
             imageList.first() shouldBeEqualTo image
         }
-
     }
 
     @Test
-    fun loadListOfImagesOnNetworkException(){
-
+    fun loadListOfImagesOnNetworkException() {
     }
 }

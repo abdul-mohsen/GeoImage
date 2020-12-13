@@ -13,7 +13,7 @@ import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import timber.log.Timber
 
-class ImagePreview: Fragment() {
+class ImagePreview : Fragment() {
     private lateinit var binding: FragmentPreviewBinding
     private val args: ImagePreviewArgs by navArgs()
 

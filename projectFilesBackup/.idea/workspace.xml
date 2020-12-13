@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+  </component>
+  <component name="AndroidLogFilters">
+    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="ImageListViewModel" />
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="verbose" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2e5ea1b2-4ce7-42cc-8481-0637fa4b3117" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bignerdranch/android/geoimage/GeoLocation.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bignerdranch/android/geoimage/GeoLocation.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bignerdranch/android/geoimage/control/ImageList.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bignerdranch/android/geoimage/control/ImageList.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/bignerdranch/android/geoimage/viewmodel/ImageListViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/bignerdranch/android/geoimage/viewmodel/ImageListViewModel.kt" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="navigationResourceFile" />
+        <option value="Kotlin Enum" />
+        <option value="layoutResourceFile" />
+        <option value="Kotlin Interface" />
+        <option value="JUnit4 Test Class" />
+        <option value="Kotlin Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1kzjAHn3AH97KmZTZEti4QPtx10" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="Pixel_2_API_30" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2020-12-06T16:09:09.537Z" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="android-custom-viewC:/Users/almaabdj02.BHI-MASTER/.gradle/caches/modules-2/files-2.1/androidx.recyclerview/recyclerview/1.2.0-alpha06/18e9deecb147fc3436421f7d77e65f0cf39a1a17/recyclerview-1.2.0-alpha06-sources.jar!/androidx/recyclerview/widget/RecyclerView.java_SELECTED" value="RecyclerView" />
+    <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
+    <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/test/java/com/bignerdranch/android/geoimage" />
+    <property name="multi-representation-previewC:/Users/almaabdj02.BHI-MASTER/.gradle/caches/modules-2/files-2.1/androidx.recyclerview/recyclerview/1.2.0-alpha06/18e9deecb147fc3436421f7d77e65f0cf39a1a17/recyclerview-1.2.0-alpha06-sources.jar!/androidx/recyclerview/widget/RecyclerView.java_selected" value="Custom views" />
+    <property name="project.structure.last.edited" value="Dependencies" />
+    <property name="project.structure.proportion" value="0.17" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="com.bignerdranch.android.geoimage.flickrAPI" />
+    </key>
+    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="com.bignerdranch.android.geoimage.flickrAPI" />
+      <recent name="com.bignerdranch.android.geoimage.adapter" />
+      <recent name="com.bignerdranch.android.geoimage.model" />
+      <recent name="com.bignerdranch.android.geoimage.control" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.bignerdranch.android.geoimage" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateKotlinClassDialog.RecentsKey">
+      <recent name="com.bignerdranch.android.geoimage.flickrAPI" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Android App.app">
+    <configuration name="ImageRepositoryTest" type="AndroidJUnit" factoryName="Android JUnit" temporary="true" nameIsGenerated="true">
+      <module name="GeoImage.app" />
+      <shortenClasspath name="CLASSPATH_FILE" />
+      <useClassPathOnly />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.bignerdranch.android.geoimage.flickrAPI.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.bignerdranch.android.geoimage.flickrAPI" />
+      <option name="MAIN_CLASS_NAME" value="com.bignerdranch.android.geoimage.flickrAPI.ImageRepositoryTest" />
+      <option name="METHOD_NAME" value="" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ImageRepositoryTest" type="AndroidJUnit" factoryName="Android JUnit" temporary="true" nameIsGenerated="true">
+      <module name="GeoImage.app" />
+      <useClassPathOnly />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.bignerdranch.android.geoimage.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.bignerdranch.android.geoimage" />
+      <option name="MAIN_CLASS_NAME" value="com.bignerdranch.android.geoimage.ImageRepositoryTest" />
+      <option name="METHOD_NAME" value="" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="AndroidJUnit" factoryName="Android JUnit">
+      <option name="TEST_OBJECT" value="class" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
+      <module name="GeoImage.app" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <Java />
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sample Java Methods" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ImageRepositoryTest.loadListOfImagesSuccessfully" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="GeoImage.app" />
+      <shortenClasspath name="CLASSPATH_FILE" />
+      <useClassPathOnly />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.bignerdranch.android.geoimage.flickrAPI.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.bignerdranch.android.geoimage.flickrAPI" />
+      <option name="MAIN_CLASS_NAME" value="com.bignerdranch.android.geoimage.flickrAPI.ImageRepositoryTest" />
+      <option name="METHOD_NAME" value="loadListOfImagesSuccessfully" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="PARAMETERS" value="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Android App.app" />
+      <item itemvalue="Android JUnit.ImageRepositoryTest" />
+      <item itemvalue="JUnit.ImageRepositoryTest.loadListOfImagesSuccessfully" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.ImageRepositoryTest.loadListOfImagesSuccessfully" />
+        <item itemvalue="Android JUnit.ImageRepositoryTest" />
+        <item itemvalue="Android JUnit.ImageRepositoryTest" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2e5ea1b2-4ce7-42cc-8481-0637fa4b3117" name="Default Changelist" comment="" />
+      <created>1606710168272</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1606710168272</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="370" y="31" key="#ImageRepositoryTest" timestamp="1607330193423">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="370" y="31" key="#ImageRepositoryTest/0.0.1536.824@0.0.1536.824" timestamp="1607330193423" />
+    <state x="286" y="165" key="#PSD" timestamp="1607261090925">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="286" y="165" key="#PSD/0.0.1536.824@0.0.1536.824" timestamp="1607261090925" />
+    <state x="223" y="67" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1607367026491">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="223" y="67" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824@0.0.1536.824" timestamp="1607367026491" />
+    <state x="560" y="128" key="#com.intellij.ide.util.MemberChooser" timestamp="1607361387639">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="560" y="128" key="#com.intellij.ide.util.MemberChooser/0.0.1536.824@0.0.1536.824" timestamp="1607361387639" />
+    <state x="267" y="336" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog" timestamp="1607327945552">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="267" y="336" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog/0.0.1536.824@0.0.1536.824" timestamp="1607327945552" />
+    <state x="563" y="293" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.packages" timestamp="1607327947236">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="563" y="293" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.packages/0.0.1536.824@0.0.1536.824" timestamp="1607327947236" />
+    <state x="530" y="203" width="479" height="417" key="#org.jetbrains.kotlin.idea.refactoring.move.moveDeclarations.ui.MoveKotlinTopLevelDeclarationsDialog" timestamp="1607090369176">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="530" y="203" width="479" height="417" key="#org.jetbrains.kotlin.idea.refactoring.move.moveDeclarations.ui.MoveKotlinTopLevelDeclarationsDialog/0.0.1536.824@0.0.1536.824" timestamp="1607090369176" />
+    <state x="349" y="167" key="AndroidCreateResourceFileDialog" timestamp="1607187596874">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="349" y="167" key="AndroidCreateResourceFileDialog/0.0.1536.824@0.0.1536.824" timestamp="1607187596874" />
+    <state x="370" y="197" key="AndroidCreateXmlResourceDialog" timestamp="1607187939488">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="370" y="197" key="AndroidCreateXmlResourceDialog/0.0.1536.824@0.0.1536.824" timestamp="1607187939488" />
+    <state x="586" y="158" key="AndroidProcessChooserDialog" timestamp="1606749846294">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="586" y="158" key="AndroidProcessChooserDialog/0.0.1536.824@0.0.1536.824" timestamp="1606749846294" />
+    <state x="549" y="153" key="FileChooserDialogImpl" timestamp="1606747266861">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="549" y="153" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1606747266861" />
+    <state width="1491" height="383" key="GridCell.Tab.0.bottom" timestamp="1607521763009">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1491" height="383" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1607521763009" />
+    <state width="1491" height="383" key="GridCell.Tab.0.center" timestamp="1607521763008">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1491" height="383" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1607521763008" />
+    <state width="1491" height="383" key="GridCell.Tab.0.left" timestamp="1607521763008">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1491" height="383" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1607521763008" />
+    <state width="1491" height="383" key="GridCell.Tab.0.right" timestamp="1607521763009">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1491" height="383" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1607521763009" />
+    <state width="1491" height="427" key="GridCell.Tab.1.bottom" timestamp="1607378424825">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1491" height="427" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1607378424825" />
+    <state width="1491" height="427" key="GridCell.Tab.1.center" timestamp="1607378424825">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1491" height="427" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1607378424825" />
+    <state width="1491" height="427" key="GridCell.Tab.1.left" timestamp="1607378424825">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1491" height="427" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1607378424825" />
+    <state width="1491" height="427" key="GridCell.Tab.1.right" timestamp="1607378424825">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1491" height="427" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1607378424825" />
+    <state x="277" y="57" key="SettingsEditor" timestamp="1607330491002">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="277" y="57" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1607330491002" />
+    <state x="584" y="190" width="584" height="444" key="chooseDestDirectoryDialog" timestamp="1607330606802">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="584" y="190" width="584" height="444" key="chooseDestDirectoryDialog/0.0.1536.824@0.0.1536.824" timestamp="1607330606802" />
+    <state x="578" y="326" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1607330417279">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="578" y="326" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.824@0.0.1536.824" timestamp="1607330417279" />
+    <state x="475" y="11" width="585" height="801" key="find.popup" timestamp="1606915337052">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="475" y="11" width="585" height="801" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1606915337052" />
+    <state x="503" y="234" key="org.jetbrains.kotlin.idea.testIntegration.KotlinCreateTestDialog" timestamp="1607330606822">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="503" y="234" key="org.jetbrains.kotlin.idea.testIntegration.KotlinCreateTestDialog/0.0.1536.824@0.0.1536.824" timestamp="1607330606822" />
+    <state x="611" y="184" key="refactoring.ChangeSignatureDialog" timestamp="1606912706510">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="611" y="184" key="refactoring.ChangeSignatureDialog/0.0.1536.824@0.0.1536.824" timestamp="1606912706510" />
+    <state x="431" y="145" width="672" height="678" key="search.everywhere.popup" timestamp="1606918695621">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="431" y="145" width="672" height="678" key="search.everywhere.popup/0.0.1536.824@0.0.1536.824" timestamp="1606918695621" />
+  </component>
+</project>

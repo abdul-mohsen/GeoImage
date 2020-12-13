@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 private const val BASE_URL = "https://api.flickr.com"
 
-class WebClient{
+class WebClient {
 
     companion object {
         val flickrAPI: FlickrAPI = Retrofit.Builder().baseUrl(BASE_URL)
